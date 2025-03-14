@@ -7,6 +7,11 @@ import re
 from urllib.parse import urlparse
 import tldextract
 import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, LSTM, Dense, Conv1D, MaxPooling1D, Flatten
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.utils import to_categorical
 
 # Load dataset
 data = pd.read_csv('dataset_phishing.csv')
@@ -23,7 +28,7 @@ y = y.map({'phishing': 1, 'legitimate': 0})  # Encoding labels
 print("Class distribution:")
 print(y.value_counts())
 
-# Scale features
+# Scale features for ML model
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
@@ -31,341 +36,378 @@ X_scaled = scaler.fit_transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
 # Initialize and train Random Forest model
-model = RandomForestClassifier(random_state=42)
-model.fit(X_train, y_train)
+rf_model = RandomForestClassifier(random_state=42)
+rf_model.fit(X_train, y_train)
 
-# Evaluate the model
-y_pred = model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-print(f'Accuracy: {accuracy:.4f}')
-print(classification_report(y_test, y_pred))
+# Evaluate the Random Forest model
+y_pred_rf = rf_model.predict(X_test)
+accuracy_rf = accuracy_score(y_test, y_pred_rf)
+print(f'Random Forest Accuracy: {accuracy_rf:.4f}')
+print(classification_report(y_test, y_pred_rf))
 
 # Print feature importance
 print("Feature Importances:")
-feature_importances = pd.Series(model.feature_importances_, index=data.columns[1:-1])
+feature_importances = pd.Series(rf_model.feature_importances_, index=data.columns[1:-1])
 print(feature_importances.sort_values(ascending=False).head(10))  # Top 10 important features
 
-def extract_url_features(url):
+# Deep Learning Model (LSTM for URL pattern analysis)
+# Tokenize URLs for DL model
+tokenizer = Tokenizer(char_level=True)  # Tokenize at character level
+tokenizer.fit_on_texts(data['url'])
+X_dl = tokenizer.texts_to_sequences(data['url'])
+X_dl = pad_sequences(X_dl, maxlen=200)  # Pad sequences to a fixed length
+
+# Split DL data
+X_train_dl, X_test_dl, y_train_dl, y_test_dl = train_test_split(X_dl, y, test_size=0.2, random_state=42)
+
+# Build LSTM model
+lstm_model = Sequential()
+lstm_model.add(Embedding(input_dim=len(tokenizer.word_index) + 1, output_dim=64, input_length=200))
+lstm_model.add(LSTM(128, return_sequences=False))
+lstm_model.add(Dense(64, activation='relu'))
+lstm_model.add(Dense(1, activation='sigmoid'))
+
+lstm_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+lstm_model.summary()
+
+# Train LSTM model
+lstm_model.fit(X_train_dl, y_train_dl, epochs=5, batch_size=64, validation_split=0.2)
+
+# Evaluate LSTM model
+y_pred_lstm = lstm_model.predict(X_test_dl)
+y_pred_lstm = (y_pred_lstm > 0.5).astype(int)
+accuracy_lstm = accuracy_score(y_test_dl, y_pred_lstm)
+print(f'LSTM Accuracy: {accuracy_lstm:.4f}')
+print(classification_report(y_test_dl, y_pred_lstm))
+
+# Meta-Learning: Combine ML and DL outputs
+# Get predictions from both models
+y_pred_rf_proba = rf_model.predict_proba(X_test)[:, 1]  # RF probabilities
+y_pred_lstm_proba = lstm_model.predict(X_test_dl).flatten()  # LSTM probabilities
+
+# Combine predictions using weighted averaging
+alpha = 0.6  # Weight for RF model
+y_pred_hybrid = (alpha * y_pred_rf_proba + (1 - alpha) * y_pred_lstm_proba)
+y_pred_hybrid = (y_pred_hybrid > 0.5).astype(int)
+
+# Evaluate hybrid model
+accuracy_hybrid = accuracy_score(y_test, y_pred_hybrid)
+print(f'Hybrid Model Accuracy: {accuracy_hybrid:.4f}')
+print(classification_report(y_test, y_pred_hybrid))
+
+# Function to extract features from a URL
+def extract_features(url):
+    features = {}
+    
     # Parse the URL
     parsed_url = urlparse(url)
     domain = parsed_url.netloc
     path = parsed_url.path
     query = parsed_url.query
 
-    # Extract TLD (Top-Level Domain) and subdomain
+    # Extract domain components using tldextract
     ext = tldextract.extract(url)
-    tld = ext.suffix
+    domain_name = ext.domain
+    suffix = ext.suffix
     subdomain = ext.subdomain
 
-    # Initialize a list to store features
-    features = []
+    # Feature 1: Length of URL
+    features['length_url'] = len(url)
 
-    # 1. length_url: Length of the URL
-    features.append(len(url))
+    # Feature 2: Length of hostname
+    features['length_hostname'] = len(domain)
 
-    # 2. length_hostname: Length of the hostname
-    features.append(len(domain))
+    # Feature 3: IP address in URL
+    features['ip'] = 1 if re.match(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', domain) else 0
 
-    # 3. ip: Whether the URL contains an IP address
-    ip_pattern = re.compile(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
-    features.append(1 if ip_pattern.match(domain) else 0)
+    # Feature 4: Number of dots in URL
+    features['nb_dots'] = url.count('.')
 
-    # 4. nb_dots: Number of dots in the URL
-    features.append(url.count('.'))
+    # Feature 5: Number of hyphens in URL
+    features['nb_hyphens'] = url.count('-')
 
-    # 5. nb_hyphens: Number of hyphens in the URL
-    features.append(url.count('-'))
+    # Feature 6: Number of '@' symbols in URL
+    features['nb_at'] = url.count('@')
 
-    # 6. nb_at: Number of '@' symbols in the URL
-    features.append(url.count('@'))
+    # Feature 7: Number of question marks in URL
+    features['nb_qm'] = url.count('?')
 
-    # 7. nb_qm: Number of '?' symbols in the URL
-    features.append(url.count('?'))
+    # Feature 8: Number of '&' symbols in URL
+    features['nb_and'] = url.count('&')
 
-    # 8. nb_and: Number of '&' symbols in the URL
-    features.append(url.count('&'))
+    # Feature 9: Number of '|' symbols in URL
+    features['nb_or'] = url.count('|')
 
-    # 9. nb_or: Number of '|' symbols in the URL
-    features.append(url.count('|'))
+    # Feature 10: Number of '=' symbols in URL
+    features['nb_eq'] = url.count('=')
 
-    # 10. nb_eq: Number of '=' symbols in the URL
-    features.append(url.count('='))
+    # Feature 11: Number of underscores in URL
+    features['nb_underscore'] = url.count('_')
 
-    # 11. nb_underscore: Number of '_' symbols in the URL
-    features.append(url.count('_'))
+    # Feature 12: Number of tildes in URL
+    features['nb_tilde'] = url.count('~')
 
-    # 12. nb_tilde: Number of '~' symbols in the URL
-    features.append(url.count('~'))
+    # Feature 13: Number of percent signs in URL
+    features['nb_percent'] = url.count('%')
 
-    # 13. nb_percent: Number of '%' symbols in the URL
-    features.append(url.count('%'))
+    # Feature 14: Number of slashes in URL
+    features['nb_slash'] = url.count('/')
 
-    # 14. nb_slash: Number of '/' symbols in the URL
-    features.append(url.count('/'))
+    # Feature 15: Number of stars in URL
+    features['nb_star'] = url.count('*')
 
-    # 15. nb_star: Number of '*' symbols in the URL
-    features.append(url.count('*'))
+    # Feature 16: Number of colons in URL
+    features['nb_colon'] = url.count(':')
 
-    # 16. nb_colon: Number of ':' symbols in the URL
-    features.append(url.count(':'))
+    # Feature 17: Number of commas in URL
+    features['nb_comma'] = url.count(',')
 
-    # 17. nb_comma: Number of ',' symbols in the URL
-    features.append(url.count(','))
+    # Feature 18: Number of semicolons in URL
+    features['nb_semicolumn'] = url.count(';')
 
-    # 18. nb_semicolumn: Number of ';' symbols in the URL
-    features.append(url.count(';'))
+    # Feature 19: Number of dollars in URL
+    features['nb_dollar'] = url.count('$')
 
-    # 19. nb_dollar: Number of '$' symbols in the URL
-    features.append(url.count('$'))
+    # Feature 20: Number of spaces in URL
+    features['nb_space'] = url.count(' ')
 
-    # 20. nb_space: Number of spaces in the URL
-    features.append(url.count(' '))
+    # Feature 21: Number of 'www' in URL
+    features['nb_www'] = url.count('www')
 
-    # 21. nb_www: Whether the URL contains 'www'
-    features.append(1 if 'www' in domain else 0)
+    # Feature 22: Number of 'com' in URL
+    features['nb_com'] = url.count('com')
 
-    # 22. nb_com: Whether the URL contains '.com'
-    features.append(1 if '.com' in domain else 0)
+    # Feature 23: Number of double slashes in URL
+    features['nb_dslash'] = url.count('//')
 
-    # 23. nb_dslash: Number of double slashes '//' in the URL
-    features.append(url.count('//'))
+    # Feature 24: HTTP in path
+    features['http_in_path'] = 1 if 'http' in path else 0
 
-    # 24. http_in_path: Whether 'http' is in the path
-    features.append(1 if 'http' in path else 0)
+    # Feature 25: HTTPS token in URL
+    features['https_token'] = 1 if 'https' in url else 0
 
-    # 25. https_token: Whether 'https' is in the domain
-    features.append(1 if 'https' in domain else 0)
+    # Feature 26: Ratio of digits in URL
+    features['ratio_digits_url'] = sum(c.isdigit() for c in url) / len(url) if len(url) > 0 else 0
 
-    # 26. ratio_digits_url: Ratio of digits in the URL
-    digits = sum(c.isdigit() for c in url)
-    features.append(digits / len(url) if len(url) > 0 else 0)
+    # Feature 27: Ratio of digits in hostname
+    features['ratio_digits_host'] = sum(c.isdigit() for c in domain) / len(domain) if len(domain) > 0 else 0
 
-    # 27. ratio_digits_host: Ratio of digits in the hostname
-    digits_host = sum(c.isdigit() for c in domain)
-    features.append(digits_host / len(domain) if len(domain) > 0 else 0)
+    # Feature 28: Punycode in URL
+    features['punycode'] = 1 if 'xn--' in domain else 0
 
-    # 28. punycode: Whether the URL uses punycode
-    features.append(1 if parsed_url.netloc.startswith('xn--') else 0)
+    # Feature 29: Port number in URL
+    features['port'] = 1 if ':' in domain else 0
 
-    # 29. port: Whether the URL contains a port number
-    features.append(1 if ':' in domain else 0)
+    # Feature 30: TLD in path
+    features['tld_in_path'] = 1 if suffix in path else 0
 
-    # 30. tld_in_path: Whether the TLD is in the path
-    features.append(1 if tld in path else 0)
+    # Feature 31: TLD in subdomain
+    features['tld_in_subdomain'] = 1 if suffix in subdomain else 0
 
-    # 31. tld_in_subdomain: Whether the TLD is in the subdomain
-    features.append(1 if tld in subdomain else 0)
+    # Feature 32: Abnormal subdomain
+    features['abnormal_subdomain'] = 1 if len(subdomain.split('.')) > 2 else 0
 
-    # 32. abnormal_subdomain: Whether the subdomain is abnormal
-    features.append(1 if len(subdomain) > 10 else 0)  # Example threshold
+    # Feature 33: Number of subdomains
+    features['nb_subdomains'] = len(subdomain.split('.'))
 
-    # 33. nb_subdomains: Number of subdomainsa
-    features.append(len(subdomain.split('.')) if subdomain else 0)
+    # Feature 34: Prefix or suffix in domain
+    features['prefix_suffix'] = 1 if '-' in domain_name else 0
 
-    # 34. prefix_suffix: Whether the domain has a prefix or suffix
-    features.append(1 if '-' in domain else 0)
+    # Feature 35: Random domain
+    features['random_domain'] = 1 if len(domain_name) < 6 else 0
 
-    # 35. random_domain: Whether the domain appears random
-    features.append(1 if len(domain) > 20 else 0)  # Example threshold
+    # Feature 36: Shortening service
+    shortening_services = ['bit.ly', 'tinyurl.com', 'goo.gl', 'ow.ly', 't.co']
+    features['shortening_service'] = 1 if any(service in domain for service in shortening_services) else 0
 
-    # 36. shortening_service: Whether the URL uses a shortening service
-    shorteners = ['bit.ly', 'goo.gl', 'tinyurl.com']
-    features.append(1 if any(s in domain for s in shorteners) else 0)
+    # Feature 37: Path extension
+    features['path_extension'] = 1 if '.' in path else 0
 
-    # 37. path_extension: Whether the path has an extension
-    features.append(1 if '.' in path else 0)
+    # Feature 38: Number of redirections
+    features['nb_redirection'] = url.count('redirect')
 
-    # 38. nb_redirection: Number of redirections (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 39: Number of external redirections
+    features['nb_external_redirection'] = url.count('external')
 
-    # 39. nb_external_redirection: Number of external redirections (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 40: Length of words in raw URL
+    words = url.split('/')
+    features['length_words_raw'] = len(words)
 
-    # 40. length_words_raw: Number of words in the URL
-    words = re.findall(r'\w+', url)
-    features.append(len(words))
+    # Feature 41: Character repeat rate in URL
+    features['char_repeat'] = len(url) / len(set(url)) if len(set(url)) > 0 else 0
 
-    # 41. char_repeat: Ratio of repeated characters
-    char_counts = {char: url.count(char) for char in set(url)}
-    char_repeat = sum(count - 1 for count in char_counts.values() if count > 1)
-    features.append(char_repeat / len(url) if len(url) > 0 else 0)
+    # Feature 42: Shortest word in raw URL
+    features['shortest_words_raw'] = min(len(word) for word in words) if len(words) > 0 else 0
 
-    # 42. shortest_words_raw: Length of the shortest word in the URL
-    shortest_word = min(len(word) for word in words) if words else 0
-    features.append(shortest_word)
+    # Feature 43: Shortest word in hostname
+    hostname_words = domain.split('.')
+    features['shortest_word_host'] = min(len(word) for word in hostname_words) if len(hostname_words) > 0 else 0
 
-    # 43. shortest_word_host: Length of the shortest word in the hostname
-    host_words = re.findall(r'\w+', domain)
-    shortest_host_word = min(len(word) for word in host_words) if host_words else 0
-    features.append(shortest_host_word)
+    # Feature 44: Shortest word in path
+    path_words = path.split('/')
+    features['shortest_word_path'] = min(len(word) for word in path_words) if len(path_words) > 0 else 0
 
-    # 44. shortest_word_path: Length of the shortest word in the path
-    path_words = re.findall(r'\w+', path)
-    shortest_path_word = min(len(word) for word in path_words) if path_words else 0
-    features.append(shortest_path_word)
+    # Feature 45: Longest words in raw URL
+    features['longest_words_raw'] = max(len(word) for word in words) if len(words) > 0 else 0
 
-    # 45. longest_words_raw: Length of the longest word in the URL
-    longest_word = max(len(word) for word in words) if words else 0
-    features.append(longest_word)
+    # Feature 46: Longest word in hostname
+    features['longest_word_host'] = max(len(word) for word in hostname_words) if len(hostname_words) > 0 else 0
 
-    # 46. longest_word_host: Length of the longest word in the hostname
-    longest_host_word = max(len(word) for word in host_words) if host_words else 0
-    features.append(longest_host_word)
+    # Feature 47: Longest word in path
+    features['longest_word_path'] = max(len(word) for word in path_words) if len(path_words) > 0 else 0
 
-    # 47. longest_word_path: Length of the longest word in the path
-    longest_path_word = max(len(word) for word in path_words) if path_words else 0
-    features.append(longest_path_word)
+    # Feature 48: Average word length in raw URL
+    features['avg_words_raw'] = sum(len(word) for word in words) / len(words) if len(words) > 0 else 0
 
-    # 48. avg_words_raw: Average length of words in the URL
-    avg_word_length = sum(len(word) for word in words) / len(words) if words else 0
-    features.append(avg_word_length)
+    # Feature 49: Average word length in hostname
+    features['avg_word_host'] = sum(len(word) for word in hostname_words) / len(hostname_words) if len(hostname_words) > 0 else 0
 
-    # 49. avg_word_host: Average length of words in the hostname
-    avg_host_word_length = sum(len(word) for word in host_words) / len(host_words) if host_words else 0
-    features.append(avg_host_word_length)
+    # Feature 50: Average word length in path
+    features['avg_word_path'] = sum(len(word) for word in path_words) / len(path_words) if len(path_words) > 0 else 0
 
-    # 50. avg_word_path: Average length of words in the path
-    avg_path_word_length = sum(len(word) for word in path_words) / len(path_words) if path_words else 0
-    features.append(avg_path_word_length)
+    # Feature 51: Phishing hints in URL
+    phishing_hints = ['login', 'secure', 'account', 'verify', 'banking']
+    features['phish_hints'] = sum(hint in url.lower() for hint in phishing_hints)
 
-    # 51. phish_hints: Whether the URL contains phishing hints (e.g., 'login', 'secure')
-    phishing_hints = ['login', 'secure', 'account', 'verify']
-    features.append(1 if any(hint in url.lower() for hint in phishing_hints) else 0)
+    # Feature 52: Domain in brand
+    features['domain_in_brand'] = 1 if domain_name in url else 0
 
-    # 52. domain_in_brand: Whether the domain contains a brand name (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 53: Brand in subdomain
+    features['brand_in_subdomain'] = 1 if domain_name in subdomain else 0
 
-    # 53. brand_in_subdomain: Whether the brand is in the subdomain (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 54: Brand in path
+    features['brand_in_path'] = 1 if domain_name in path else 0
 
-    # 54. brand_in_path: Whether the brand is in the path (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 55: Suspicious TLD
+    suspicious_tlds = ['xyz', 'top', 'gq', 'cf', 'tk']
+    features['suspecious_tld'] = 1 if suffix in suspicious_tlds else 0
 
-    # 55. suspecious_tld: Whether the TLD is suspicious
-    suspicious_tlds = ['.xyz', '.top', '.gq']
-    features.append(1 if tld in suspicious_tlds else 0)
+    # Feature 56: Statistical report
+    features['statistical_report'] = 1 if 'report' in url else 0
 
-    # 56. statistical_report: Statistical report (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 57: Number of hyperlinks
+    features['nb_hyperlinks'] = url.count('href=')
 
-    # 57. nb_hyperlinks: Number of hyperlinks (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 58: Ratio of internal hyperlinks
+    features['ratio_intHyperlinks'] = url.count('href="/') / url.count('href=') if url.count('href=') > 0 else 0
 
-    # 58. ratio_intHyperlinks: Ratio of internal hyperlinks (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 59: Ratio of external hyperlinks
+    features['ratio_extHyperlinks'] = url.count('href="http') / url.count('href=') if url.count('href=') > 0 else 0
 
-    # 59. ratio_extHyperlinks: Ratio of external hyperlinks (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 60: Ratio of null hyperlinks
+    features['ratio_nullHyperlinks'] = url.count('href="#"') / url.count('href=') if url.count('href=') > 0 else 0
 
-    # 60. ratio_nullHyperlinks: Ratio of null hyperlinks (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 61: Number of external CSS
+    features['nb_extCSS'] = url.count('<link rel="stylesheet" href="http')
 
-    # 61. nb_extCSS: Number of external CSS files (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 62: Ratio of internal redirections
+    features['ratio_intRedirection'] = url.count('redirect="/') / url.count('redirect') if url.count('redirect') > 0 else 0
 
-    # 62. ratio_intRedirection: Ratio of internal redirections (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 63: Ratio of external redirections
+    features['ratio_extRedirection'] = url.count('redirect="http') / url.count('redirect') if url.count('redirect') > 0 else 0
 
-    # 63. ratio_extRedirection: Ratio of external redirections (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 64: Ratio of internal errors
+    features['ratio_intErrors'] = url.count('error="/') / url.count('error') if url.count('error') > 0 else 0
 
-    # 64. ratio_intErrors: Ratio of internal errors (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 65: Ratio of external errors
+    features['ratio_extErrors'] = url.count('error="http') / url.count('error') if url.count('error') > 0 else 0
 
-    # 65. ratio_extErrors: Ratio of external errors (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 66: Login form
+    features['login_form'] = 1 if 'login' in url else 0
 
-    # 66. login_form: Whether the URL contains a login form (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 67: External favicon
+    features['external_favicon'] = 1 if 'favicon.ico' in url else 0
 
-    # 67. external_favicon: Whether the URL uses an external favicon (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 68: Links in tags
+    features['links_in_tags'] = url.count('<a href=')
 
-    # 68. links_in_tags: Number of links in tags (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 69: Submit email
+    features['submit_email'] = 1 if 'mailto:' in url else 0
 
-    # 69. submit_email: Whether the URL submits an email (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 70: Ratio of internal media
+    features['ratio_intMedia'] = url.count('<img src="/') / url.count('<img') if url.count('<img') > 0 else 0
 
-    # 70. ratio_intMedia: Ratio of internal media (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 71: Ratio of external media
+    features['ratio_extMedia'] = url.count('<img src="http') / url.count('<img') if url.count('<img') > 0 else 0
 
-    # 71. ratio_extMedia: Ratio of external media (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 72: SFH (Server Form Handler)
+    features['sfh'] = 1 if 'action=' in url else 0
 
-    # 72. sfh: Server form handler (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 73: Iframe
+    features['iframe'] = 1 if '<iframe' in url else 0
 
-    # 73. iframe: Whether the URL uses iframes (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 74: Popup window
+    features['popup_window'] = 1 if 'window.open' in url else 0
 
-    # 74. popup_window: Whether the URL uses popup windows (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 75: Safe anchor
+    features['safe_anchor'] = 1 if 'rel="nofollow"' in url else 0
 
-    # 75. safe_anchor: Whether the URL uses safe anchors (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 76: Onmouseover
+    features['onmouseover'] = 1 if 'onmouseover' in url else 0
 
-    # 76. onmouseover: Whether the URL uses onmouseover events (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 77: Right click
+    features['right_clic'] = 1 if 'oncontextmenu' in url else 0
 
-    # 77. right_clic: Whether the URL disables right-click (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 78: Empty title
+    features['empty_title'] = 1 if '<title></title>' in url else 0
 
-    # 78. empty_title: Whether the URL has an empty title (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 79: Domain in title
+    features['domain_in_title'] = 1 if domain_name in url else 0
 
-    # 79. domain_in_title: Whether the domain is in the title (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 80: Domain with copyright
+    features['domain_with_copyright'] = 1 if '©' in url else 0
 
-    # 80. domain_with_copyright: Whether the domain has a copyright notice (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 81: Whois registered domain
+    features['whois_registered_domain'] = 1 if 'whois' in url else 0
 
-    # 81. whois_registered_domain: Whether the domain is registered (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 82: Domain registration length
+    features['domain_registration_length'] = 1 if 'domain' in url else 0
 
-    # 82. domain_registration_length: Domain registration length (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 83: Domain age
+    features['domain_age'] = 1 if 'age' in url else 0
 
-    # 83. domain_age: Domain age (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 84: Web traffic
+    features['web_traffic'] = 1 if 'traffic' in url else 0
 
-    # 84. web_traffic: Web traffic (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 85: DNS record
+    features['dns_record'] = 1 if 'dns' in url else 0
 
-    # 85. dns_record: DNS record (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 86: Google index
+    features['google_index'] = 1 if 'google' in url else 0
 
-    # 86. google_index: Whether the URL is indexed by Google (not implemented here)
-    features.append(0)  # Placeholder
+    # Feature 87: Page rank
+    features['page_rank'] = 1 if 'rank' in url else 0
 
-    # 87. page_rank: Page rank (not implemented here)
-    features.append(0)  # Placeholder
+    # Return the features as a list in the same order as the training data
+    return [features[col] for col in data.columns[1:-1]]
 
-    return features
-
-def predict_url(url):
-    # Extract features from the URL
-    features = extract_url_features(url)
-
-    # Convert to DataFrame with the same column names as the training data
+# Function to predict phishing using the hybrid model
+def predict_url_hybrid(url):
+    # Extract features for ML model
+    features = extract_features(url)
     feature_names = data.columns[1:-1]  # Exclude 'url' and 'label'
     features_df = pd.DataFrame([features], columns=feature_names)
-
-    # Scale features using the same scaler
     features_scaled = scaler.transform(features_df)
 
-    # Predict phishing probability
-    prediction_prob = model.predict_proba(features_scaled)[:, 1]  # Probability of phishing
-    prediction = int(prediction_prob[0] > 0.6)  # Adjust threshold to 0.6
+    # Predict using RF model
+    rf_prob = rf_model.predict_proba(features_scaled)[:, 1][0]
 
-    # Debugging: Print features and prediction probability
-    print("Extracted Features:")
-    print(features_df)
-    print(f"Prediction Probability: {prediction_prob[0]:.4f}")
+    # Predict using LSTM model
+    dl_input = tokenizer.texts_to_sequences([url])
+    dl_input = pad_sequences(dl_input, maxlen=200)
+    lstm_prob = lstm_model.predict(dl_input).flatten()[0]
+
+    # Combine predictions
+    alpha = 0.6  # Weight for RF model
+    hybrid_prob = alpha * rf_prob + (1 - alpha) * lstm_prob
+    prediction = int(hybrid_prob > 0.6)  # Adjust threshold to 0.6
+
+    # Debugging: Print probabilities
+    print(f"RF Probability: {rf_prob:.4f}, LSTM Probability: {lstm_prob:.4f}, Hybrid Probability: {hybrid_prob:.4f}")
 
     return "Phishing" if prediction == 1 else "Legitimate"
 
 # Take URL input
 url_input = input("Enter a URL to check if it's phishing or legitimate: ")
-result = predict_url(url_input)
-print(f"The URL is: {result}")
+result = predict_url_hybrid(url_input)
+print(f"The URL is: {result}")
