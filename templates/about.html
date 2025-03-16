@@ -1,0 +1,452 @@
+{% extends './partials/layout.html' %}
+
+{% block content %}
+  {% include  "./partials/header.html" with pageTitle="About Us" breadcrumbItem="About" %}
+
+    {# Start About Section #}
+    <section class="cs_pt_135 cs_pt_lg_75 cs_pb_140 cs_pb_lg_80 position-relative">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 cs_mb_lg_55">
+            <div class="cs_experience cs_style_1 position-relative">
+              <div class="cs_experience_thumb">
+                <img src="/static/img/experience_img.jpeg" alt="Thumb" class="position-relative cs_zindex_3 cs_rounded_15">
+                <div class="cs_experience_shape"><img src="/static/img/experience_shape_1.png" alt="Shape" class="moving_x"></div>
+              </div>
+              <div class="cs_experience_box background-filled text-center bg-white cs_rounded_10 position-absolute bottom-0 end-0 cs_zindex_3 d-flex flex-column justify-content-center align-items-center" data-src="/static/img/experience_bg.jpeg">
+                <img src="/static/img/experience_icon.svg" alt="Icon" class="cs_mb_5">
+                <h3 class="text-white cs_fs_60 cs_fs_lg_46 fw-bold lh_1 mb-0 d-flex justify-content-between">
+                  <span data-count-to="100" class="odometer"></span>
+                  <span class="fw-light">%</span>
+                </h3>
+                <h2 class="cs_fs_18 fw-normal text-white m-0">Project Success Rate</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="cs_about cs_style_1">
+              <div class="cs_section_heading cs_style_1 d-flex align-items-center cs_mb_15">
+                <div class="cs_section_heading_in">
+                  <h3 class="cs_fs_20 cs_fs_lg_18 text-accent fw-normal cs_lh_base cs_mb_10 wow fadeInLeft" data-wow-duration="0.8s" data-wow-delay="0.2s">About Phish Guard Pro</h3>
+                  <h2 class="cs_fs_48 cs_fs_lg_36 cs_mb_20">Protecting Dhaka International University from Cyber Threats</h2>
+                  <p class="m-0">
+                    Phish Guard Pro is an innovative project developed by Dhaka International University to combat phishing attacks and enhance cybersecurity awareness among students, faculty, and staff. Our mission is to create a secure digital environment by leveraging cutting-edge technology and comprehensive training programs.
+                  </p>
+                </div>
+              </div>
+              <div class="cs_progressbar cs_style_1 cs_mb_20">
+                <div class="cs_progressbar_heading d-flex justify-content-between align-items-center cs_mb_8">
+                  <h3 class="fw-medium m-0 cs_fs_18">Phishing Detection Accuracy</h3>
+                  <p class="cs_fs_14 cs_lh_base m-0">95%</p>
+                </div>
+                <div class="cs_progress cs_rounded_8 overflow-hidden" data-progress="95">
+                  <div class="cs_progress_in bg-accent cs_rounded_8 h-100 wow fadeInLeft" data-wow-duration="0.8s" data-wow-delay="0.2s"></div>
+                </div>
+              </div>{# .cs_progressbar #}
+              <div class="row cs_mb_15">
+                <div class="col-lg-6">
+                  <div class="cs_about-icon-box position-relative cs_mb_25">
+                    <span class="position-absolute cs_height_20 cs_width_20 top-0 start-0 cs_mt_5 bg-accent text-white cs_fs_10 d-flex align-items-center justify-content-center cs_rounded_30"><i class="fa-solid fa-angles-right"></i></span>
+                    <h3 class="cs_fs_16 cs_pl_35 cs_mb_12 cs_lh_lg">Real-Time Detection</h3>
+                    <p class="m-0">Our system identifies phishing attempts in real-time, ensuring immediate response and protection.</p>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="cs_about-icon-box position-relative cs_mb_25">
+                    <span class="position-absolute cs_height_20 cs_width_20 top-0 start-0 cs_mt_5 bg-accent text-white cs_fs_10 d-flex align-items-center justify-content-center cs_rounded_30"><i class="fa-solid fa-angles-right"></i></span>
+                    <h3 class="cs_fs_16 cs_pl_35 cs_mb_12 cs_lh_lg">User Training</h3>
+                    <p class="m-0">We provide comprehensive training to help users recognize and avoid phishing attacks.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center cs_row_gap_20 cs_column_gap_30 cs_column_gap_lg_20 flex-wrap">
+                <a href="/contact" class="cs_btn cs_style_1 cs_fs_16 cs_rounded_5 cs_pl_30 cs_pr_30 cs_pt_10 cs_pb_10 overflow-hidden"><span>Learn More</span></a>
+                <a href="https://www.youtube.com/embed/VStvZjykQ00" class="cs_video_open d-flex align-items-center">
+                  <span class="cs_player_btn cs_width_45 cs_height_45 rounded-circle d-flex align-items-center justify-content-center text-white bg-primary position-relative cs_pl_5">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1.71401 16C1.61636 16 1.51868 15.9748 1.43054 15.9246C1.25251 15.8231 1.14258 15.6339 1.14258 15.4285V0.570579C1.14258 0.365193 1.25251 0.176009 1.43054 0.0744495C1.61022 -0.026561 1.82844 -0.0243301 2.00475 0.0783627L14.5762 7.50735C14.7503 7.6106 14.8569 7.79755 14.8569 7.99957C14.8569 8.20159 14.7503 8.38855 14.5762 8.49179L2.00475 15.9207C1.9149 15.9732 1.81443 16 1.71401 16ZM2.28544 1.57172V14.4274L13.1621 7.99957L2.28544 1.57172Z" fill="white"/>
+                    </svg>   
+                  </span>
+                  <span class="cs_ml_15">Watch the Video</span>               
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cs_section_shape-1 position-absolute semi_rotate">
+        <svg width="182" height="177" viewBox="0 0 182 177" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M94.4478 96.1115C106.99 105.211 120.6 111.159 132.748 112.86C132.823 112.871 132.894 112.876 132.967 112.886L150.387 27.5688C151.002 24.552 147.98 22.0838 145.148 23.2887L63.8438 57.8735C67.5196 70.1011 78.6592 84.6548 94.4478 96.1115Z" fill="#888888" fill-opacity="0.2"/>
+          <path d="M128.155 120.487C115.612 118.057 102.053 111.863 89.5833 102.815C72.3806 90.3334 60.5954 75.0018 56.1891 61.1295L14.8513 78.7143C11.6218 80.0876 11.7968 84.724 15.1212 85.8483L74.9037 106.09C78.4203 107.281 81.3895 109.706 83.2572 112.915L115.015 167.46C116.78 170.492 121.358 169.74 122.061 166.301L131.308 121.013C130.265 120.863 129.215 120.692 128.155 120.487Z" fill="#888888" fill-opacity="0.2"/>
+          <path d="M129.41 114.012C116.866 111.583 103.307 105.387 90.8381 96.3405C61.4995 75.0532 47.8833 45.4701 59.84 28.9897C71.7975 12.512 104.146 16.278 133.483 37.5651C143.082 44.5285 151.409 52.7615 157.564 61.3736C158.895 63.2352 158.464 65.8208 156.603 67.1511C154.742 68.4799 152.156 68.0495 150.827 66.1896C145.184 58.2942 137.505 50.7138 128.621 44.2672C103.894 26.326 75.466 21.5559 66.5447 33.8531C57.6235 46.1491 70.9766 71.6938 95.7041 89.6352C108.246 98.7348 121.848 104.686 134.005 106.383C145.234 107.955 153.677 105.705 157.78 100.049C162.059 94.1524 160.568 86.183 158.563 80.5345C157.799 78.3788 158.926 76.0123 161.081 75.2472C163.236 74.4823 165.604 75.6089 166.369 77.7657C170.142 88.3972 169.474 98.04 164.484 104.915C158.497 113.168 147.265 116.603 132.859 114.587C131.719 114.43 130.568 114.237 129.41 114.012Z" fill="#888888" fill-opacity="0.2"/>
+        </svg>          
+      </div>
+    </section>
+    {# End About Section #}
+
+    {# Start Project Supervisor Section #}
+      <section class="cs_pt_100 cs_pb_100">
+        <div class="container">
+          <div class="cs_section_heading cs_style_1 text-center cs_mb_60 cs_mb_lg_40">
+            <div class="cs_section_heading_in">
+              <h3 class="cs_fs_20 cs_fs_lg_18 text-accent fw-normal cs_lh_base cs_mb_10 wow fadeInUp" data-wow-duration="0.8s" data-wow-delay="0.2s">Project Leadership</h3>
+              <h2 class="cs_fs_48 cs_fs_lg_36 m-0">Meet Our Project Supervisor</h2>
+            </div>
+          </div>
+          <div class="row align-items-center">
+            <!-- Supervisor Image -->
+            <div class="col-lg-4 text-center">
+              <div class="cs_supervisor_img cs_rounded_50 overflow-hidden wow fadeInLeft" data-wow-duration="0.8s" data-wow-delay="0.2s">
+                <img class="w-100 cs_rounded_50" src="/static/img/team_member_4.jpeg" alt="Project Supervisor">
+              </div>
+            </div>
+            <!-- Supervisor Details -->
+            <div class="col-lg-8">
+              <div class="cs_supervisor_details wow fadeInRight" data-wow-duration="0.8s" data-wow-delay="0.2s">
+                <h2 class="cs_fs_36 cs_fs_lg_30 cs_mb_10">Dr. Robert Smith</h2>
+                <p class="cs_fs_20 cs_fs_lg_18 text-accent cs_mb_20">Project Supervisor & Cybersecurity Expert</p>
+                <p class="cs_fs_18 cs_fs_lg_16 cs_mb_30">
+                  Dr. Robert Smith is a seasoned cybersecurity professional with over 15 years of experience in the field. He holds a Ph.D. in Cybersecurity and has been instrumental in leading numerous high-profile projects aimed at enhancing digital security for educational institutions. His expertise in phishing prevention and user awareness training has made him a key figure in the fight against cyber threats.
+                </p>
+                <div class="cs_social_btns d-flex cs_column_gap_15">
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle bg-accent"><i class="fa-brands fa-linkedin-in"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle bg-accent"><i class="fa-brands fa-twitter"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle bg-accent"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    {# End Project Supervisor Section #}
+
+    {# Start Team Section #}
+    <section class="cs_pt_133 cs_pt_lg_75">
+      <div class="container">
+        <div class="cs_section_heading cs_style_1 d-flex align-items-center text-center cs_mb_60 cs_mb_lg_40">
+          <div class="cs_section_heading_in">
+            <h3 class="cs_fs_20 cs_fs_lg_18 text-accent fw-normal cs_lh_base cs_mb_10 wow fadeInUp" data-wow-duration="0.8s" data-wow-delay="0.2s">Meet Our Team</h3>
+            <h2 class="cs_fs_48 cs_fs_lg_36 m-0">The Experts Behind the University Phishing Awareness Project</h2>
+          </div>
+        </div>
+        <div class="row">
+          <!-- Team Member 1 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="cs_team cs_style_1 text-center cs_mb_25 overflow-hidden cs_rounded_50">
+              <div class="cs_team_member position-relative cs_rounded_50">
+                <img class="w-100 cs_rounded_50" src="/static/img/team_member_1.jpeg" alt="Team Member 1">
+                <div class="cs_social_btns d-flex flex-wrap cs_column_gap_15 cs_row_gap_15 cs_transition_5 cs_fs_20 cs_fs_lg_18 position-absolute">
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-linkedin-in"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-twitter"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+              </div>
+              <div class="cs_team_info cs_pt_127 cs_pl_15 cs_pr_15 cs_pb_25 cs_transition_4">
+                <h2 class="text-white m-0 cs_fs_26 cs_mb_3">Dr. Emily Carter</h2>
+                <p class="text-white m-0">Project Director</p>
+              </div>
+            </div>
+          </div>
+          <!-- Team Member 2 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="cs_team cs_style_1 text-center cs_mb_25 overflow-hidden cs_rounded_50">
+              <div class="cs_team_member position-relative cs_rounded_50">
+                <img class="w-100 cs_rounded_50" src="/static/img/team_member_2.jpeg" alt="Team Member 2">
+                <div class="cs_social_btns d-flex flex-wrap cs_column_gap_15 cs_row_gap_15 cs_transition_5 cs_fs_20 cs_fs_lg_18 position-absolute">
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-linkedin-in"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-twitter"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+              </div>
+              <div class="cs_team_info cs_pt_127 cs_pl_15 cs_pr_15 cs_pb_25 cs_transition_4">
+                <h2 class="text-white m-0 cs_fs_26 cs_mb_3">John Matthews</h2>
+                <p class="text-white m-0">Cybersecurity Lead</p>
+              </div>
+            </div>
+          </div>
+          <!-- Team Member 3 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="cs_team cs_style_1 text-center cs_mb_25 overflow-hidden cs_rounded_50">
+              <div class="cs_team_member position-relative cs_rounded_50">
+                <img class="w-100 cs_rounded_50" src="/static/img/team_member_3.jpeg" alt="Team Member 3">
+                <div class="cs_social_btns d-flex flex-wrap cs_column_gap_15 cs_row_gap_15 cs_transition_5 cs_fs_20 cs_fs_lg_18 position-absolute">
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-linkedin-in"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-twitter"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+              </div>
+              <div class="cs_team_info cs_pt_127 cs_pl_15 cs_pr_15 cs_pb_25 cs_transition_4">
+                <h2 class="text-white m-0 cs_fs_26 cs_mb_3">Sarah Johnson</h2>
+                <p class="text-white m-0">Education & Training Specialist</p>
+              </div>
+            </div>
+          </div>
+          <!-- Team Member 4 -->
+          <div class="col-lg-4 col-md-6 offset-lg-2">
+            <div class="cs_team cs_style_1 text-center cs_mb_25 overflow-hidden cs_rounded_50">
+              <div class="cs_team_member position-relative cs_rounded_50">
+                <img class="w-100 cs_rounded_50" src="/static/img/team_member_5.jpeg" alt="Team Member 4">
+                <div class="cs_social_btns d-flex flex-wrap cs_column_gap_15 cs_row_gap_15 cs_transition_5 cs_fs_20 cs_fs_lg_18 position-absolute">
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-linkedin-in"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-twitter"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+              </div>
+              <div class="cs_team_info cs_pt_127 cs_pl_15 cs_pr_15 cs_pb_25 cs_transition_4">
+                <h2 class="text-white m-0 cs_fs_26 cs_mb_3">Michael Brown</h2>
+                <p class="text-white m-0">Data Analyst</p>
+              </div>
+            </div>
+          </div>
+          <!-- Team Member 5 -->
+          <div class="col-lg-4 col-md-6">
+            <div class="cs_team cs_style_1 text-center cs_mb_25 overflow-hidden cs_rounded_50">
+              <div class="cs_team_member position-relative cs_rounded_50">
+                <img class="w-100 cs_rounded_50" src="/static/img/team_member_5.jpeg" alt="Team Member 5">
+                <div class="cs_social_btns d-flex flex-wrap cs_column_gap_15 cs_row_gap_15 cs_transition_5 cs_fs_20 cs_fs_lg_18 position-absolute">
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-linkedin-in"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-brands fa-twitter"></i></a>
+                  <a href="#" class="d-flex align-items-center justify-content-center cs_height_45 cs_width_45 border-0 text-white rounded-circle"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+              </div>
+              <div class="cs_team_info cs_pt_127 cs_pl_15 cs_pr_15 cs_pb_25 cs_transition_4">
+                <h2 class="text-white m-0 cs_fs_26 cs_mb_3">Laura Wilson</h2>
+                <p class="text-white m-0">Communications Manager</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    {# End Team Section #}
+
+    {# Start Tools & Technology Section #}
+    <section class="cs_pt_140 cs_pt_lg_75 cs_pb_115 cs_pb_lg_55">
+      <div class="container">
+        <div class="cs_section_heading cs_style_1 text-center cs_mb_60 cs_mb_lg_40">
+          <div class="cs_section_heading_in">
+            <h3 class="cs_fs_20 text-accent fw-normal cs_lh_base wow fadeInUp" data-wow-duration="0.8s" data-wow-delay="0.2s">Tools & Technology</h3>
+            <h2 class="cs_fs_48 cs_fs_lg_36 m-0">Technologies Powering Phish Guard Pro</h2>
+          </div>
+        </div>
+        <div class="row">
+          <!-- Tool 1: Machine Learning Frameworks -->
+          <div class="col-xl-3 col-md-6">
+            <div class="cs_service cs_style_1 cs_pt_25 cs_pl_25 cs_pr_25 cs_pb_15 bg-white cs_transition_4 shadow cs_mb_25">
+              <div class="cs_service_iconbox d-flex align-items-center cs_mb_20">
+                <div class="cs_service_icon d-flex align-items-center justify-content-center cs_rounded_5 cs_mr_15 cs_transition_4 flex-none">
+                  <i class="fa-brands fa-phoenix-framework fa-3x"></i>
+                </div>
+                <h2 class="cs_lh_base cs_fs_20 m-0"><a href="#" class="inline-block">Machine Learning Frameworks</a></h2>
+              </div>
+              <p class="cs_mb_24">We use TensorFlow and PyTorch to build and train advanced phishing detection models.</p>
+              <div class="cs_service_thumb position-relative cs_rounded_5">
+                <a href="#" class="cs_service_btn d-flex align-items-center justify-content-center rounded-circle position-absolute text-white">
+                  <i class="fa-solid fa-arrow-right"></i>                   
+                </a>
+                <div class="cs_service_thumb-in position-relative-in background-filled h-100" data-src="/static/img/tools/ml_frameworks.jpg"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Tool 2: Data Analytics -->
+          <div class="col-xl-3 col-md-6">
+            <div class="cs_service cs_style_1 cs_pt_25 cs_pl_25 cs_pr_25 cs_pb_15 bg-white cs_transition_4 shadow cs_mb_25">
+              <div class="cs_service_iconbox d-flex align-items-center cs_mb_20">
+                <div class="cs_service_icon d-flex align-items-center justify-content-center cs_rounded_5 cs_mr_15 cs_transition_4 flex-none">
+                  <i class="fa-solid fa-chart-simple fa-3x"></i>
+                </div>
+                <h2 class="cs_lh_base cs_fs_20 m-0"><a href="#" class="inline-block">Data Analytics</a></h2>
+              </div>
+              <p class="cs_mb_24">We leverage Python and Pandas for data preprocessing and analysis to identify phishing patterns.</p>
+              <div class="cs_service_thumb position-relative cs_rounded_5">
+                <a href="#" class="cs_service_btn d-flex align-items-center justify-content-center rounded-circle position-absolute text-white">
+                  <i class="fa-solid fa-arrow-right"></i>                  
+                </a>
+                <div class="cs_service_thumb-in position-relative-in background-filled h-100" data-src="/static/img/tools/data_analytics_bg.jpg"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Tool 3: Cloud Infrastructure -->
+          <div class="col-xl-3 col-md-6">
+            <div class="cs_service cs_style_1 cs_pt_25 cs_pl_25 cs_pr_25 cs_pb_15 bg-white cs_transition_4 shadow cs_mb_25">
+              <div class="cs_service_iconbox d-flex align-items-center cs_mb_20">
+                <div class="cs_service_icon d-flex align-items-center justify-content-center cs_rounded_5 cs_mr_15 cs_transition_4 flex-none">
+                  <i class="fa-solid fa-cloud-arrow-up fa-3x"></i>
+                </div>
+                <h2 class="cs_lh_base cs_fs_20 m-0"><a href="#" class="inline-block">Cloud Infrastructure</a></h2>
+              </div>
+              <p class="cs_mb_24">We use AWS and Google Cloud for scalable and secure deployment of Phish Guard Pro.</p>
+              <div class="cs_service_thumb position-relative cs_rounded_5">
+                <a href="#" class="cs_service_btn d-flex align-items-center justify-content-center rounded-circle position-absolute text-white">
+                  <i class="fa-solid fa-arrow-right"></i>                  
+                </a>
+                <div class="cs_service_thumb-in position-relative-in background-filled h-100" data-src="/static/img/tools/cloud_infrastructure_bg.jpg"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Tool 4: Cybersecurity Tools -->
+          <div class="col-xl-3 col-md-6">
+            <div class="cs_service cs_style_1 cs_pt_25 cs_pl_25 cs_pr_25 cs_pb_15 bg-white cs_transition_4 shadow cs_mb_25">
+              <div class="cs_service_iconbox d-flex align-items-center cs_mb_20">
+                <div class="cs_service_icon d-flex align-items-center justify-content-center cs_rounded_5 cs_mr_15 cs_transition_4 flex-none">
+                  <i class="fa-solid fa-shield-halved fa-3x"></i>
+                </div>
+                <h2 class="cs_lh_base cs_fs_20 m-0"><a href="#" class="inline-block">Cybersecurity Tools</a></h2>
+              </div>
+              <p class="cs_mb_24">We integrate tools like Wireshark and Snort for network monitoring and threat detection.</p>
+              <div class="cs_service_thumb position-relative cs_rounded_5">
+                <a href="#" class="cs_service_btn d-flex align-items-center justify-content-center rounded-circle position-absolute text-white">
+                  <i class="fa-solid fa-arrow-right"></i>                 
+                </a>
+                <div class="cs_service_thumb-in position-relative-in background-filled h-100" data-src="/static/img/tools/cybersecurity_tools_bg.jpg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    {# End Tools & Technology Section #}
+
+    {# Start Testimonial Section #}
+    <section class="background-filled cs_pt_110 cs_pt_lg_55 cs_pb_140 cs_pb_lg_80" data-src="/static/img/testimonial_bg.jpeg">
+      <div class="cs_testimonial_slider cs_gap_30">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-4 cs_mb_lg_40">
+              <div class="cs_section_heading cs_style_1 d-flex align-items-center cs_mb_30">
+                <div class="cs_section_heading_in">
+                  <h3 class="cs_fs_20 cs_fs_lg_18 text-accent fw-normal cs_lh_base cs_mb_10 wow fadeInLeft" data-wow-duration="0.8s" data-wow-delay="0.2s">Testimonial</h3>
+                  <h2 class="cs_fs_48 cs_fs_lg_36 cs_mb_20">What They’re Saying?</h2>
+                  <p class="m-0">Providing legal advice, contract drafting, compliance assistance, intellectual property protection, and other legal support for businesses.</p>
+                </div>
+              </div>
+              <div class="d-flex cs_column_gap_15">
+                <div class="cs_slider_prev filter cs_height_45 cs_width_45 bg-white rounded-circle d-flex align-items-center justify-content-center bg-accent-hover cs_transition_4">
+                  <svg width="20" height="8" viewBox="0 0 20 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.461063 4.4077H19.538C19.7649 4.4077 19.9482 4.22437 19.9482 3.99745C19.9482 3.77052 19.7649 3.58719 19.538 3.58719H1.45209L3.94183 1.09745C4.10209 0.937189 4.10209 0.676933 3.94183 0.516677C3.78158 0.35642 3.52132 0.35642 3.36106 0.516677L0.170038 3.7077C0.0520878 3.82565 0.0174732 4.00129 0.0815754 4.15514C0.145678 4.3077 0.295677 4.4077 0.461063 4.4077Z" fill="black"/>
+                    <path d="M3.65549 7.60253C3.76062 7.60253 3.86575 7.56278 3.94524 7.48202C4.10549 7.32176 4.10549 7.0615 3.94524 6.90125L0.750365 3.70637C0.590108 3.54612 0.329853 3.54612 0.169597 3.70637C0.00934029 3.86663 0.00934029 4.12689 0.169597 4.28714L3.36447 7.48202C3.44524 7.56278 3.55036 7.60253 3.65549 7.60253Z" fill="black"/>
+                  </svg>             
+                </div>
+                <div class="cs_slider_next filter cs_height_45 cs_width_45 bg-white rounded-circle d-flex align-items-center justify-content-center bg-accent-hover cs_transition_4">
+                  <svg width="20" height="8" viewBox="0 0 20 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.5389 4.4077H0.462014C0.235091 4.4077 0.0517578 4.22437 0.0517578 3.99745C0.0517578 3.77052 0.235091 3.58719 0.462014 3.58719H18.5479L16.0582 1.09745C15.8979 0.937189 15.8979 0.676933 16.0582 0.516677C16.2184 0.35642 16.4787 0.35642 16.6389 0.516677L19.83 3.7077C19.9479 3.82565 19.9825 4.00129 19.9184 4.15514C19.8543 4.3077 19.7043 4.4077 19.5389 4.4077Z" fill="#18191D"/>
+                    <path d="M16.3445 7.60253C16.2394 7.60253 16.1342 7.56278 16.0548 7.48202C15.8945 7.32176 15.8945 7.0615 16.0548 6.90125L19.2496 3.70637C19.4099 3.54612 19.6701 3.54612 19.8304 3.70637C19.9907 3.86663 19.9907 4.12689 19.8304 4.28714L16.6355 7.48202C16.5548 7.56278 16.4496 7.60253 16.3445 7.60253Z" fill="#18191D"/>
+                  </svg>          
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="cs_slider_activate">
+                <div class="cs_slide">
+                  <div class="cs_testimonial cs_style_1 cs_pt_20">
+                    <div class="cs_testimonial_in bg-white shadow-sm cs_pl_30 cs_pr_30 cs_pb_27 cs_pt_1 cs_rounded_10">
+                      <div class="cs_testimonial_img cs_mb_15"><img src="/static/img/avatar_1.png" alt="Avatar" class="cs_height_75 cs_width_75 rounded-circle"></div>
+                      <div class="cs_rating text-accent cs_mb_15" data-rating="4.5">
+                        <div class="cs_rating_percentage"></div>
+                      </div>
+                      <p class="cs_mb_14">I've been using [business name] for the past year and I'm so glad I did. Their products and services are top-notch and their customer service is amazing. I would highly recommend them to anyone</p>
+                      <h3 class="cs_fs_18 cs_mb_2 cs_lh_base">Darlene Robertson</h3>
+                      <p class="m-0 cs_fs_14 cs_lh_base">Web design</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="cs_slide">
+                  <div class="cs_testimonial cs_style_1 cs_pt_20">
+                    <div class="cs_testimonial_in bg-white shadow-sm cs_pl_30 cs_pr_30 cs_pb_27 cs_pt_1 cs_rounded_10">
+                      <div class="cs_testimonial_img cs_mb_15"><img src="/static/img/avatar_2.png" alt="Avatar" class="cs_height_75 cs_width_75 rounded-circle"></div>
+                      <div class="cs_rating text-accent cs_mb_15" data-rating="5">
+                        <div class="cs_rating_percentage"></div>
+                      </div>
+                      <p class="cs_mb_14">I've been using [business name] for the past year and I'm so glad I did. Their products and services are top-notch and their customer service is amazing. I would highly recommend them to anyone</p>
+                      <h3 class="cs_fs_18 cs_mb_2 cs_lh_base">Carol McCarthy</h3>
+                      <p class="m-0 cs_fs_14 cs_lh_base">Product manager</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="cs_slide">
+                  <div class="cs_testimonial cs_style_1 cs_pt_20">
+                    <div class="cs_testimonial_in bg-white shadow-sm cs_pl_30 cs_pr_30 cs_pb_27 cs_pt_1 cs_rounded_10">
+                      <div class="cs_testimonial_img cs_mb_15"><img src="/static/img/avatar_3.png" alt="Avatar" class="cs_height_75 cs_width_75 rounded-circle"></div>
+                      <div class="cs_rating text-accent cs_mb_15" data-rating="4">
+                        <div class="cs_rating_percentage"></div>
+                      </div>
+                      <p class="cs_mb_14">I've been using [business name] for the past year and I'm so glad I did. Their products and services are top-notch and their customer service is amazing. I would highly recommend them to anyone</p>
+                      <h3 class="cs_fs_18 cs_mb_2 cs_lh_base">Peter Johnson</h3>
+                      <p class="m-0 cs_fs_14 cs_lh_base">Web developer</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="cs_slide">
+                  <div class="cs_testimonial cs_style_1 cs_pt_20">
+                    <div class="cs_testimonial_in bg-white shadow-sm cs_pl_30 cs_pr_30 cs_pb_27 cs_pt_1 cs_rounded_10">
+                      <div class="cs_testimonial_img cs_mb_15"><img src="/static/img/avatar_4.png" alt="Avatar" class="cs_height_75 cs_width_75 rounded-circle"></div>
+                      <div class="cs_rating text-accent cs_mb_15" data-rating="5">
+                        <div class="cs_rating_percentage"></div>
+                      </div>
+                      <p class="cs_mb_14">I've been using [business name] for the past year and I'm so glad I did. Their products and services are top-notch and their customer service is amazing. I would highly recommend them to anyone</p>
+                      <h3 class="cs_fs_18 cs_mb_2 cs_lh_base">Max Lawrence</h3>
+                      <p class="m-0 cs_fs_14 cs_lh_base">Digital marketing</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="cs_slide">
+                  <div class="cs_testimonial cs_style_1 cs_pt_20">
+                    <div class="cs_testimonial_in bg-white shadow-sm cs_pl_30 cs_pr_30 cs_pb_27 cs_pt_1 cs_rounded_10">
+                      <div class="cs_testimonial_img cs_mb_15"><img src="/static/img/avatar_1.png" alt="Avatar" class="cs_height_75 cs_width_75 rounded-circle"></div>
+                      <div class="cs_rating text-accent cs_mb_15" data-rating="4.5">
+                        <div class="cs_rating_percentage"></div>
+                      </div>
+                      <p class="cs_mb_14">I've been using [business name] for the past year and I'm so glad I did. Their products and services are top-notch and their customer service is amazing. I would highly recommend them to anyone</p>
+                      <h3 class="cs_fs_18 cs_mb_2 cs_lh_base">Darlene Robertson</h3>
+                      <p class="m-0 cs_fs_14 cs_lh_base">Web design</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="cs_slide">
+                  <div class="cs_testimonial cs_style_1 cs_pt_20">
+                    <div class="cs_testimonial_in bg-white shadow-sm cs_pl_30 cs_pr_30 cs_pb_27 cs_pt_1 cs_rounded_10">
+                      <div class="cs_testimonial_img cs_mb_15"><img src="/static/img/avatar_2.png" alt="Avatar" class="cs_height_75 cs_width_75 rounded-circle"></div>
+                      <div class="cs_rating text-accent cs_mb_15" data-rating="5">
+                        <div class="cs_rating_percentage"></div>
+                      </div>
+                      <p class="cs_mb_14">I've been using [business name] for the past year and I'm so glad I did. Their products and services are top-notch and their customer service is amazing. I would highly recommend them to anyone</p>
+                      <h3 class="cs_fs_18 cs_mb_2 cs_lh_base">Carol McCarthy</h3>
+                      <p class="m-0 cs_fs_14 cs_lh_base">Product manager</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="cs_slide">
+                  <div class="cs_testimonial cs_style_1 cs_pt_20">
+                    <div class="cs_testimonial_in bg-white shadow-sm cs_pl_30 cs_pr_30 cs_pb_27 cs_pt_1 cs_rounded_10">
+                      <div class="cs_testimonial_img cs_mb_15"><img src="/static/img/avatar_3.png" alt="Avatar" class="cs_height_75 cs_width_75 rounded-circle"></div>
+                      <div class="cs_rating text-accent cs_mb_15" data-rating="4">
+                        <div class="cs_rating_percentage"></div>
+                      </div>
+                      <p class="cs_mb_14">I've been using [business name] for the past year and I'm so glad I did. Their products and services are top-notch and their customer service is amazing. I would highly recommend them to anyone</p>
+                      <h3 class="cs_fs_18 cs_mb_2 cs_lh_base">Peter Johnson</h3>
+                      <p class="m-0 cs_fs_14 cs_lh_base">Web developer</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="cs_slide">
+                  <div class="cs_testimonial cs_style_1 cs_pt_20">
+                    <div class="cs_testimonial_in bg-white shadow-sm cs_pl_30 cs_pr_30 cs_pb_27 cs_pt_1 cs_rounded_10">
+                      <div class="cs_testimonial_img cs_mb_15"><img src="/static/img/avatar_4.png" alt="Avatar" class="cs_height_75 cs_width_75 rounded-circle"></div>
+                      <div class="cs_rating text-accent cs_mb_15" data-rating="5">
+                        <div class="cs_rating_percentage"></div>
+                      </div>
+                      <p class="cs_mb_14">I've been using [business name] for the past year and I'm so glad I did. Their products and services are top-notch and their customer service is amazing. I would highly recommend them to anyone</p>
+                      <h3 class="cs_fs_18 cs_mb_2 cs_lh_base">Max Lawrence</h3>
+                      <p class="m-0 cs_fs_14 cs_lh_base">Digital marketing</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    {# End Testimonial Section #}
+
+    {% endblock content %}
