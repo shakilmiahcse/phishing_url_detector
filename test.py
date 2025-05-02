@@ -2,14 +2,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from urllib.parse import urlparse
+import tldextract
+import whois
+from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
-from sklearn.metrics import (accuracy_score, classification_report, 
-                            confusion_matrix, roc_curve, auc, 
-                            precision_recall_curve, average_precision_score)
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 # Load dataset
 data = pd.read_csv("dataset_phishing.csv")
@@ -38,102 +39,120 @@ X_test_scaled = scaler.transform(X_test)
 
 # Initialize models
 models = {
-    "Naive Bayes": GaussianNB(),
     "Random Forest": RandomForestClassifier(random_state=42),
     "XGBoost": XGBClassifier(random_state=42, 
                             scale_pos_weight=(len(y_train) - sum(y_train))/sum(y_train),
                             eval_metric='logloss')
 }
 
-# Create figure for evaluation plots
-plt.figure(figsize=(15, 15))
-
-# Train and evaluate models
-for i, (name, model) in enumerate(models.items()):
-    print(f"\n{'='*40}\n{name}\n{'='*40}")
-    
-    # Train
-    if name == "Naive Bayes":
-        model.fit(X_train_scaled, y_train)
-        X_eval = X_test_scaled
-    else:
-        model.fit(X_train, y_train)
-        X_eval = X_test
-    
-    # Predict
-    y_pred = model.predict(X_eval)
-    y_proba = model.predict_proba(X_eval)[:, 1] if hasattr(model, "predict_proba") else [0]*len(y_test)
-    
-    # Metrics
-    accuracy = accuracy_score(y_test, y_pred)
-    print(f"Accuracy: {accuracy:.4f}")
-    print("\nClassification Report:")
+# Train models
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    print(f"\n{name} Performance:")
     print(classification_report(y_test, y_pred))
-    
-    # Confusion Matrix Plot
-    plt.subplot(3, 3, i*3 + 1)
-    cm = confusion_matrix(y_test, y_pred)
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
-                xticklabels=['Legitimate', 'Phishing'], 
-                yticklabels=['Legitimate', 'Phishing'])
-    plt.title(f'{name} Confusion Matrix')
-    plt.ylabel('True Label')
-    plt.xlabel('Predicted Label')
-    
-    # ROC Curve
-    if len(np.unique(y_test)) > 1:
-        fpr, tpr, _ = roc_curve(y_test, y_proba)
-        roc_auc = auc(fpr, tpr)
-        plt.subplot(3, 3, i*3 + 2)
-        plt.plot(fpr, tpr, color='darkorange', lw=2, 
-                label=f'ROC curve (area = {roc_auc:.2f})')
-        plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-        plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title(f'{name} ROC Curve')
-        plt.legend(loc="lower right")
-    
-    # Precision-Recall Curve
-    precision, recall, _ = precision_recall_curve(y_test, y_proba)
-    avg_precision = average_precision_score(y_test, y_proba)
-    plt.subplot(3, 3, i*3 + 3)
-    plt.plot(recall, precision, color='blue', lw=2,
-            label=f'AP = {avg_precision:.2f}')
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.title(f'{name} Precision-Recall Curve')
-    plt.legend(loc="lower left")
 
-plt.tight_layout()
-plt.show()
+# Feature extraction function
+def extract_url_features(url):
+    # Basic URL features
+    parsed = urlparse(url)
+    ext = tldextract.extract(url)
+    
+    features = {
+        'length_url': len(url),
+        'nb_dots': url.count('.'),
+        'nb_qm': url.count('?'),
+        'nb_and': url.count('&'),
+        'nb_eq': url.count('='),
+        'https_token': 1 if parsed.scheme == 'https' else 0,
+        'ratio_digits_url': sum(c.isdigit() for c in url) / len(url) if len(url) > 0 else 0,
+        'punycode': 1 if 'xn--' in url else 0,
+        'tld_in_subdomain': 1 if ext.suffix in ext.subdomain else 0,
+        'abnormal_subdomain': 1 if len(ext.subdomain.split('.')) > 3 else 0,
+        'domain_in_brand': 1 if 'paypal' in url or 'ebay' in url or 'amazon' in url else 0,  # Example brands
+        'brand_in_path': 1 if any(brand in parsed.path for brand in ['paypal', 'ebay', 'amazon']) else 0,
+        'suspecious_tld': 1 if ext.suffix in ['xyz', 'top', 'gq', 'tk', 'ml', 'cf', 'ga'] else 0,
+        'ratio_intHyperlinks': 0.5,  # Placeholder - would need actual page content
+        'ratio_extHyperlinks': 0.5,  # Placeholder - would need actual page content
+        'external_favicon': 0,  # Placeholder
+        'sfh': 0,  # Placeholder (server form handler)
+        'iframe': 0,  # Placeholder - would need page content
+        'domain_in_title': 0,  # Placeholder - would need page title
+        'domain_age': 365,  # Placeholder - would need WHOIS lookup
+        'dns_record': 1,  # Placeholder - would need DNS check
+        'page_rank': 5  # Placeholder - would need actual page rank
+    }
+    
+    # Try to get WHOIS information for domain age
+    try:
+        domain_info = whois.whois(parsed.netloc)
+        if domain_info.creation_date:
+            if isinstance(domain_info.creation_date, list):
+                creation_date = domain_info.creation_date[0]
+            else:
+                creation_date = domain_info.creation_date
+            age = (datetime.now() - creation_date).days
+            features['domain_age'] = age if age > 0 else 365
+    except:
+        pass
+    
+    return [features[feat] for feat in important_features]
 
-# Feature Importance for tree-based models
-for name in ["Random Forest", "XGBoost"]:
-    if name in models:
-        plt.figure(figsize=(10, 6))
+# Hybrid prediction function
+def predict_url_hybrid(url):
+    try:
+        # Extract features
+        features = extract_url_features(url)
         
-        if name == "Random Forest":
-            importances = models[name].feature_importances_
-            feat_imp = pd.DataFrame({
-                'Feature': important_features,
-                'Importance': importances
-            }).sort_values('Importance', ascending=False)
+        # Create DataFrame with the same features as training
+        features_df = pd.DataFrame([features], columns=important_features)
+        
+        # Handle missing values the same way as training
+        features_df = features_df.replace(-1, np.nan).fillna(X.mean())
+        
+        # Make predictions with both models
+        rf_pred = models["Random Forest"].predict(features_df)[0]
+        xgb_pred = models["XGBoost"].predict(features_df)[0]
+        
+        # Get probabilities
+        rf_proba = models["Random Forest"].predict_proba(features_df)[0][1]
+        xgb_proba = models["XGBoost"].predict_proba(features_df)[0][1]
+        
+        # Combine predictions with weighted average
+        combined_proba = (rf_proba * 0.5 + xgb_proba * 0.5)
+        combined_pred = 1 if combined_proba >= 0.5 else 0
+        
+        return {
+            "url": url,
+            "status": "Phishing" if combined_pred == 1 else "Legitimate",
+            "confidence": combined_proba if combined_pred == 1 else 1 - combined_proba,
+            "RF_prediction": "Phishing" if rf_pred == 1 else "Legitimate",
+            "RF_confidence": rf_proba if rf_pred == 1 else 1 - rf_proba,
+            "XGB_prediction": "Phishing" if xgb_pred == 1 else "Legitimate",
+            "XGB_confidence": xgb_proba if xgb_pred == 1 else 1 - xgb_proba
+        }
+    except Exception as e:
+        return {
+            "url": url,
+            "error": str(e)
+        }
+
+# Interactive testing
+if __name__ == "__main__":
+    print("URL Phishing Detector")
+    print("Enter 'quit' to exit\n")
+    
+    while True:
+        url_input = input("Enter URL to check: ").strip()
+        if url_input.lower() in ['quit', 'exit']:
+            break
+            
+        result = predict_url_hybrid(url_input)
+        
+        if 'error' in result:
+            print(f"Error: {result['error']}")
         else:
-            # Handle XGBoost feature importance
-            importance_dict = models[name].get_booster().get_score(importance_type='weight')
-            # Create mapping between feature indices and names
-            feat_map = {f'f{i}': feat for i, feat in enumerate(important_features)}
-            # Convert to DataFrame
-            feat_imp = pd.DataFrame({
-                'Feature': [feat_map[k] for k in importance_dict.keys()],
-                'Importance': list(importance_dict.values())
-            }).sort_values('Importance', ascending=False)
-        
-        # Plot top 10 features
-        sns.barplot(x='Importance', y='Feature', 
-                   data=feat_imp.head(10), palette='viridis')
-        plt.title(f'{name} - Top 10 Feature Importance')
-        plt.tight_layout()
-        plt.show()
+            print(f"\nResult for: {result['url']}")
+            print(f"Final Prediction: {result['status']} (Confidence: {result['confidence']:.2%})")
+            print(f"Random Forest: {result['RF_prediction']} (Confidence: {result['RF_confidence']:.2%})")
+            print(f"XGBoost: {result['XGB_prediction']} (Confidence: {result['XGB_confidence']:.2%})\n")
