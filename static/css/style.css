@@ -647,7 +647,7 @@ label {
 }
 
 .cs_page_header {
-  height: 640px;
+  height: 400px;
   padding: 190px 0 50px;
 }
 .cs_page_header::before {
@@ -661,7 +661,7 @@ label {
 }
 @media (max-width: 991px) {
   .cs_page_header {
-    height: 500px;
+    height: 300px;
   }
 }
 
@@ -3082,7 +3082,7 @@ label {
   height: 100vh;
   min-height: 350px;
   max-height: 1000px;
-  padding: 190px 0 50px;
+  padding: 0 0 50px;
 }
 .cs_hero.cs_style_2 h2 {
   letter-spacing: 0.5em;
