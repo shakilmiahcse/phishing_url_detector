@@ -60,30 +60,39 @@
   </header>
     {# End Header Section #}
     {# Start Hero #}
-    <section class="cs_hero cs_style_2 d-flex align-items-center justify-content-center background-filled position-relative cs_ripple_version" data-src="/static/img/jeremy-bishop.jpg">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-8 col-lg-6 text-center">
-            <!-- Phishing Detector UI -->
-            <div class="phishing-card shadow-lg">
-              <div class="card-body p-4">
-                <h2 class="card-title mb-4">Phishing Detector</h2>
-                <p class="card-text mb-4">Enter a URL or text to check for phishing attempts.</p>
-                <form id="phishingForm">
-                  <div class="mb-3">
-                    <input type="text" class="form-control form-control-lg" id="inputUrl" placeholder="Enter URL or text" required>
-                  </div>
-                  <button type="submit" class="btn btn-primary btn-lg w-100">Check for Phishing</button>
-                </form>
-                <div id="result" class="mt-4"></div>
+<section class="cs_hero cs_style_2 d-flex align-items-center justify-content-center background-filled position-relative cs_ripple_version" data-src="/static/img/jeremy-bishop.jpg">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6 text-center">
+        <!-- Phishing Detector UI -->
+        <div class="phishing-card shadow-lg">
+          <div class="card-body p-4">
+            <h2 class="card-title mb-4">Phishing Detector</h2>
+            <p class="card-text mb-4">Enter a URL or text to check for phishing attempts.</p>
+            <form method="POST" action="">
+              {% csrf_token %}
+              <div class="mb-3">
+                <input type="text" class="form-control form-control-lg" name="url" placeholder="Enter URL" required>
               </div>
+              <button type="submit" class="btn btn-primary btn-lg w-100">Check for Phishing</button>
+            </form>
+            <div class="mt-4">
+              {% if error %} 
+                {% if error == 'Legitimate' %}
+                  <p style="color: green;"><strong>{{ error }}</strong></p>
+                {% else %}
+                  <p style="color: red;"><strong>{{ error }}</strong></p>
+                {% endif %} 
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
-      <img src="/static/img/ZKZl.gif" class="fish" id="fish" style="top: 50%; left: 50%;">
-      <div class=" position-absolute w-100 h-100 start-0 top-0"></div>
-    </section>
+    </div>
+  </div>
+  <img src="/static/img/ZKZl.gif" class="fish" id="fish" style="top: 50%; left: 50%;">
+  <div class="position-absolute w-100 h-100 start-0 top-0"></div>
+</section>
     {# End Hero #}
 
     {% endblock content %}
