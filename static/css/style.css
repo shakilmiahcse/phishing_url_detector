@@ -4765,6 +4765,7 @@ html .ui-button.ui-state-disabled:active {
   align-items: center;
   justify-content: center;
   min-height: 50px;
+  font-size: 24px;
 }
 
 @keyframes spin {

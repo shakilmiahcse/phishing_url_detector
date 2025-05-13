@@ -2,16 +2,14 @@ import pandas as pd
 from urllib.parse import urlparse
 import re
 from bs4 import BeautifulSoup
-try:
-    from python_whois import whois
-except ImportError:
-    import whois 
+import whois 
 import urllib.request
 import time
 import socket
 from urllib.error import HTTPError, URLError
 from datetime import datetime
 import warnings
+import tldextract
 
 class FeatureExtraction:
     def __init__(self):
@@ -102,14 +100,8 @@ class FeatureExtraction:
             return 1
 
     def safe_whois_lookup(self, domain):
-        """Handle different whois library versions and errors"""
         try:
-            try:
-                # Try new python-whois API
-                return whois(domain)
-            except TypeError:
-                # Fallback to old API if needed
-                return whois.whois(domain)
+            return whois.whois(domain)
         except Exception as e:
             print(f"WHOIS lookup failed for {domain}: {str(e)}")
             return None
@@ -228,6 +220,83 @@ class FeatureExtraction:
             return 1 if re.search(r"https?://.*(http|https)", url) else 0
         except:
             return 1
+            
+    def nb_dots(self, url):
+        """Count number of dots in URL"""
+        try:
+            return url.count('.')
+        except:
+            return 0
+            
+    def nb_qm(self, url):
+        """Count number of question marks in URL"""
+        try:
+            return url.count('?')
+        except:
+            return 0
+            
+    def nb_and(self, url):
+        """Count number of ampersands in URL"""
+        try:
+            return url.count('&')
+        except:
+            return 0
+            
+    def nb_eq(self, url):
+        """Count number of equal signs in URL"""
+        try:
+            return url.count('=')
+        except:
+            return 0
+            
+    def ratio_digits_url(self, url):
+        """Calculate ratio of digits in URL"""
+        try:
+            digits = sum(c.isdigit() for c in url)
+            length = len(url)
+            return digits / length if length > 0 else 0
+        except:
+            return 0
+            
+    def punycode(self, url):
+        """Check if URL contains punycode"""
+        try:
+            domain = urlparse(url).netloc
+            return 1 if 'xn--' in domain else 0
+        except:
+            return 0
+            
+    def domain_in_brand(self, url, brand=None):
+        """Check if brand name is in domain"""
+        try:
+            if brand is None:
+                # You might want to pass a brand name or implement a default logic
+                return 0
+            domain = urlparse(url).netloc.lower()
+            return 1 if brand.lower() in domain else 0
+        except:
+            return 0
+            
+    def brand_in_path(self, url, brand=None):
+        """Check if brand name is in path"""
+        try:
+            if brand is None:
+                # You might want to pass a brand name or implement a default logic
+                return 0
+            path = urlparse(url).path.lower()
+            return 1 if brand.lower() in path else 0
+        except:
+            return 0
+            
+    def suspicious_tld(self, url):
+        """Check if TLD is suspicious"""
+        suspicious_tlds = {'zip', 'cricket', 'link', 'work', 'party', 'gq', 'kim', 
+                          'country', 'science', 'tk', 'ml', 'ga', 'cf', 'review'}
+        try:
+            ext = tldextract.extract(url)
+            return 1 if ext.suffix in suspicious_tlds else 0
+        except:
+            return 0
 
 
 def getAttributess(url):
@@ -254,7 +323,16 @@ def getAttributess(url):
             fe.https_token(url),       # http_tokens
             fe.statistical_report(url),  # statistical_report
             fe.shortening_service(url), # tiny_url
-            fe.web_traffic(url)       # web_traffic
+            fe.web_traffic(url),       # web_traffic
+            fe.nb_dots(url),          # nb_dots
+            fe.nb_qm(url),            # nb_qm
+            fe.nb_and(url),           # nb_and
+            fe.nb_eq(url),             # nb_eq
+            fe.ratio_digits_url(url),  # ratio_digits_url
+            fe.punycode(url),          # punycode
+            fe.domain_in_brand(url),   # domain_in_brand
+            fe.brand_in_path(url),     # brand_in_path
+            fe.suspicious_tld(url)     # suspicious_tld
         ]
         
         # EXACT ORDER as model expects:
@@ -271,7 +349,16 @@ def getAttributess(url):
             'http_tokens',
             'statistical_report',
             'tiny_url',
-            'web_traffic'
+            'web_traffic',
+            'nb_dots',
+            'nb_qm',
+            'nb_and',
+            'nb_eq',
+            'ratio_digits_url',
+            'punycode',
+            'domain_in_brand',
+            'brand_in_path',
+            'suspecious_tld'
         ]
         
         data = pd.DataFrame([features], columns=columns)

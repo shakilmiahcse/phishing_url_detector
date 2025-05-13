@@ -1,113 +1,57 @@
-#Classifier.py
-# coding: utf-8
-
-# In[1]:
-
-import os
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+import pickle
 
+# Load datasets
+legitimate_urls = pd.read_csv("model_comparision_legitimate.csv")
+phishing_urls = pd.read_csv("model_comparision_phishing.csv")
 
-# ## Collection of Data
-
-# In[2]:
-
-
-project_path = "G:/phishing_detector/"
-
-legitimate_urls = pd.read_csv(os.path.join(project_path, "legitimate-urls.csv"))
-phishing_urls = pd.read_csv(os.path.join(project_path, "phishing-urls.csv"))
-
-
-# In[3]:
-
-
-print(len(legitimate_urls))
-print(len(phishing_urls))
-
-
-# ## Data PreProcessing
-# #### Data is in two data frames so we merge them to make one dataframe
-# Note: two dataframes has same column names
-
-# In[4]:
-
-
-# urls = legitimate_urls.append(phishing_urls)
+# Combine datasets
 urls = pd.concat([legitimate_urls, phishing_urls], axis=0)
 
+# Drop unnecessary columns - make sure these match what your FeatureExtraction returns
+# Keep only the columns that match your FeatureExtraction features
+urls = urls.drop(columns=[col for col in urls.columns if col not in [
+    'Having_@_symbol',
+    'Having_IP',
+    'Prefix_suffix_separation',
+    'Redirection_//_symbol',
+    'Sub_domains',
+    'URL_Length',
+    'age_domain',
+    'dns_record',
+    'domain_registration_length',
+    'http_tokens',
+    'statistical_report',
+    'tiny_url',
+    'web_traffic',
+    'nb_dots',
+    'nb_qm',
+    'nb_and',
+    'nb_eq',
+    'ratio_digits_url',
+    'punycode',
+    'domain_in_brand',
+    'brand_in_path',
+    'suspecious_tld',
+    'label'
+]])
 
-# In[5]:
-
-
-urls.head(5)
-
-
-# In[6]:
-
-print(len(urls))
-print(urls.columns)
-
-
-# #### Removing Unnecessary columns
-
-# In[7]:
-
-
-urls = urls.drop(urls.columns[[0,3,5]],axis=1)
-print(urls.columns)
-
-# #### Since we merged two dataframes top 1000 rows will have legitimate urls and bottom 1000 rows will have phishing urls. So if we split the data now and create a model for it will overfit or underfit so we need to shuffle the rows before splitting the data into training set and test set
-
-# In[8]:
-
-
-# shuffling the rows in the dataset so that when splitting the train and test set are equally distributed
+# Shuffle the data
 urls = urls.sample(frac=1).reset_index(drop=True)
 
+# Separate features and labels
+X = urls.drop('label', axis=1)
+y = urls['label']
 
-# #### Removing class variable from the dataset
-urls_without_labels = urls.drop('label',axis=1)
-urls_without_labels.columns
-labels = urls['label']
-#labels
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=100)
 
-# #### splitting the data into train data and test data
-import random
-random.seed(100)
-from sklearn.model_selection import train_test_split
-data_train, data_test, labels_train, labels_test = train_test_split(urls_without_labels, labels, test_size=0.20, random_state=100)
-print(len(data_train),len(data_test),len(labels_train),len(labels_test))
-print(labels_train.value_counts())
-print(labels_test.value_counts())
-
-# #### Checking the data is split in equal distribution or not
-"""
-train_0_dist = 711/1410
-print(train_0_dist)
-train_1_dist = 699/1410
-print(train_1_dist)
-test_0_dist = 306/605
-print(test_0_dist)
-test_1_dist = 299/605
-print(test_1_dist)
-"""
-
-# ## Random Forest
-
-from sklearn.ensemble import RandomForestClassifier
+# Train model
 RFmodel = RandomForestClassifier()
-RFmodel.fit(data_train,labels_train)
-rf_pred_label = RFmodel.predict(data_test)
-#print(list(labels_test)),print(list(rf_pred_label))
+RFmodel.fit(X_train, y_train)
 
-from sklearn.metrics import confusion_matrix,accuracy_score
-cm2 = confusion_matrix(labels_test,rf_pred_label)
-print(cm2)
-print(accuracy_score(labels_test,rf_pred_label))
-
-# Saving the model to a file
-import pickle
-file_name = "RandomForestModel.sav"
-pickle.dump(RFmodel,open(file_name,'wb'))
-
-
+# Save model
+with open("RandomForestModel.sav", 'wb') as f:
+    pickle.dump(RFmodel, f)
