@@ -4787,4 +4787,31 @@ html .ui-button.ui-state-disabled:active {
   animation: spin 1s linear infinite;
 }
 
+.cs_tech_list {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.cs_tech_list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.cs_tech_list li:last-child {
+  border-bottom: none;
+}
+
+.cs_tech_list i {
+  width: 24px;
+  text-align: center;
+  margin-right: 10px;
+  color: #6c757d;
+}
+
+.cs_tech_list strong {
+  margin-right: 5px;
+}
 /*# sourceMappingURL=style.css.map */
