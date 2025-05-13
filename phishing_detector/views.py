@@ -1,59 +1,42 @@
 from django.shortcuts import render
-from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
 import FeatureExtraction
 import pickle
 import socket
 import pandas as pd
 
-# Set default timeout for all socket operations
 socket.setdefaulttimeout(60)
 
 def index(request):
-    context = {}
-    
-    if request.method == 'POST':
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # AJAX request handling
         url = request.POST.get('url', '')
         if not url.startswith(('http://', 'https://')):
-            url = 'http://' + url  # Add default protocol if missing
+            url = 'http://' + url
             
         try:
-            print("Processing URL:", url)
             data = FeatureExtraction.getAttributess(url)
             
             if data is None:
-                context['error'] = "Could not process this URL"
-                return render(request, "index.html", context)
+                return JsonResponse({'error': 'Could not process this URL'}, status=400)
                 
-            print("Extracted features:", data)
-            
             try:
                 with open('RandomForestModel.sav', 'rb') as model_file:
                     RFmodel = pickle.load(model_file)
                 
-                # Debug: Print expected feature names if available
-                if hasattr(RFmodel, 'feature_names_in_'):
-                    print("Model expects features:", RFmodel.feature_names_in_)
-                    print("Features being sent:", data.columns.tolist())
-                
                 predicted_value = RFmodel.predict(data)
-                
-                if predicted_value == 0:    
-                    context['error'] = "Legitimate"
-                else:
-                    context['error'] = "Phishing"
-                    
-                return render(request, "index.html", context)
+                result = "Legitimate" if predicted_value[0] == 0 else "Phishing"
+                return JsonResponse({'result': result})
                 
             except Exception as model_error:
                 print("Model error:", str(model_error))
-                context['error'] = "Model processing error"
-                return render(request, "index.html", context)
+                return JsonResponse({'error': 'Model processing error'}, status=500)
                 
         except Exception as e:
             print("Error:", str(e))
-            context['error'] = "Error processing URL. Please check the URL and try again."
-            return render(request, "index.html", context)
+            return JsonResponse({'error': 'Error processing URL'}, status=500)
     
+    # Regular GET request handling
     return render(request, "index.html")
 
 def about(request):

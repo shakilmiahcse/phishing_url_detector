@@ -69,21 +69,15 @@
           <div class="card-body p-4">
             <h2 class="card-title mb-4">Phishing Detector</h2>
             <p class="card-text mb-4">Enter a URL or text to check for phishing attempts.</p>
-            <form method="POST" action="">
+            <form id="phishingForm" method="POST">
               {% csrf_token %}
               <div class="mb-3">
                 <input type="text" class="form-control form-control-lg" name="url" placeholder="Enter URL" required>
               </div>
               <button type="submit" class="btn btn-primary btn-lg w-100">Check for Phishing</button>
             </form>
-            <div class="mt-4">
-              {% if error %} 
-                {% if error == 'Legitimate' %}
-                  <p style="color: green;"><strong>{{ error }}</strong></p>
-                {% else %}
-                  <p style="color: red;"><strong>{{ error }}</strong></p>
-                {% endif %} 
-              {% endif %}
+            <div id="resultContainer" class="mt-4">
+              <!-- Result will be inserted here by JavaScript -->
             </div>
           </div>
         </div>
@@ -93,6 +87,45 @@
   <img src="/static/img/ZKZl.gif" class="fish" id="fish" style="top: 50%; left: 50%;">
   <div class="position-absolute w-100 h-100 start-0 top-0"></div>
 </section>
+
+<script>
+document.getElementById('phishingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const formData = new FormData(form);
+    const resultContainer = document.getElementById('resultContainer');
+    
+    // Show loading state
+    resultContainer.innerHTML = `
+        <div class="d-flex justify-content-center align-items-center">
+        <div class="loading-spinner me-3"></div>
+        <span>Analyzing URL...</span>
+    </div>
+    `;
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            resultContainer.innerHTML = `<p style="color: red;"><strong>${data.error}</strong></p>`;
+        } else {
+            const color = data.result === 'Legitimate' ? 'green' : 'red';
+            resultContainer.innerHTML = `<p style="color: ${color};"><strong>${data.result}</strong></p>`;
+        }
+    })
+    .catch(error => {
+        resultContainer.innerHTML = '<p style="color: red;"><strong>An error occurred. Please try again.</strong></p>';
+        console.error('Error:', error);
+    });
+});
+</script>
     {# End Hero #}
 
     {% endblock content %}
