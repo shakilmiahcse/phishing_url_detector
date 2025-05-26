@@ -4,8 +4,8 @@ from sklearn.model_selection import train_test_split
 import pickle
 
 # Load datasets
-legitimate_urls = pd.read_csv("model_comparision_legitimate.csv")
-phishing_urls = pd.read_csv("model_comparision_phishing.csv")
+legitimate_urls = pd.read_csv("corrected_legitimate.csv")
+phishing_urls = pd.read_csv("corrected_phishing.csv")
 
 # Combine datasets
 urls = pd.concat([legitimate_urls, phishing_urls], axis=0)
