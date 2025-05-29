@@ -29,7 +29,7 @@
 ---
 
 ## 📁 Project Structure
-
+```bash
 phishing-url-detector/
 ├── model_evaluation.ipynb # Jupyter Notebook for training & testing
 ├── corrected_legitimate.csv # Legitimate URLs dataset
@@ -43,9 +43,9 @@ phishing-url-detector/
 
 ## 🚀 How to Run Locally
 
+```bash
 ## 1. Clone the Repository
 
-```bash
 git clone https://github.com/shakilmiahcse/phishing_url_detector.git
 cd phishing_url_detector
 
