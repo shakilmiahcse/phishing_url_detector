@@ -37,7 +37,7 @@ phishing-url-detector/
 ├── requirements.txt # All dependencies
 ├── README.md # This file
 └── venv/ # Virtual environment (excluded from Git)
-
+```
 
 ---
 
