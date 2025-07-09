@@ -4,7 +4,7 @@
 
 🌐 **Live App:** [https://phishguardpro.techseba.com](https://phishguardpro.techseba.com)
 
-📂 **GitHub Repo:** [shakilmiahcse/phishing_url_detector_django](https://github.com/shakilmiahcse/phishing_url_detector_django)
+📂 **GitHub Repo:** [shakilmiahcse/phishing_url_detector_django](https://github.com/shakilmiahcse/phishing_url_detector.git)
 
 ---
 
@@ -40,9 +40,12 @@ cd phishing_url_detector_django
 
 # 2. Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate  # Linux/MacOS
-# OR
-venv\Scripts\activate    # Windows
+
+# Windows CMD
+venv\Scripts\activate
+
+# Git Bash / WSL
+source venv/Scripts/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
