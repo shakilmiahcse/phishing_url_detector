@@ -56,13 +56,13 @@ python manage.py createsuperuser
 # 6. Run development server
 python manage.py runserver
 
-🧠 Model Performance
+## 🧠 Model Performance
 
-Model	Accuracy	Precision	Recall	F1 Score
-Random Forest	0.9383	0.9243	0.9547	0.9393
-Decision Tree	0.9136	0.8972	0.9342	0.9153
-Logistic Regression	0.8601	0.8277	0.9095	0.8667
+- Model	Accuracy	Precision	Recall	F1 Score
+- Random Forest	0.9383	0.9243	0.9547	0.9393
+- Decision Tree	0.9136	0.8972	0.9342	0.9153
+- Logistic Regression	0.8601	0.8277	0.9095	0.8667
 
-📧 Contact
-Shakil Miah - @shakilmiahcse
-Project Link: https://github.com/shakilmiahcse/phishing_url_detector_django
+## 📧 Contact
+- Shakil Miah - @shakilmiahcse
+- Project Link: https://github.com/shakilmiahcse/phishing_url_detector_django
