@@ -58,12 +58,16 @@ python manage.py runserver
 
 ```
 
-## 🧠 Model Performance
+---
 
-- Model	Accuracy	Precision	Recall	F1 Score
-- Random Forest	0.9383	0.9243	0.9547	0.9393
-- Decision Tree	0.9136	0.8972	0.9342	0.9153
-- Logistic Regression	0.8601	0.8277	0.9095	0.8667
+## 🧠 Model Performance Summary
+
+| Model                | Accuracy | Precision | Recall  | F1 Score | ROC AUC | PR AUC  | Training Time (s) |
+|----------------------|----------|-----------|---------|----------|---------|---------|-------------------|
+| 🟢 Random Forest     | 0.9383   | 0.9243    | 0.9547  | 0.9393   | 0.9820  | 0.9814  | 1.1348            |
+| 🟡 Decision Tree     | 0.9136   | 0.8972    | 0.9342  | 0.9153   | 0.9218  | 0.8822  | 0.0146            |
+| 🔵 Logistic Reg.     | 0.8601   | 0.8277    | 0.9095  | 0.8667   | 0.9248  | 0.8972  | 0.0191            |
+| 🔴 Naive Bayes       | 0.6708   | 0.6056    | 0.9794  | 0.7484   | 0.8907  | 0.9019  | 0.0038            |
 
 ## 📧 Contact
 - Shakil Miah - @shakilmiahcse
