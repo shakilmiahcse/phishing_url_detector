@@ -56,6 +56,8 @@ python manage.py createsuperuser
 # 6. Run development server
 python manage.py runserver
 
+```
+
 ## 🧠 Model Performance
 
 - Model	Accuracy	Precision	Recall	F1 Score
